@@ -10,3 +10,5 @@ run cluster cassandra
 remove
 > sudo docker-compose down --rmi all
 
+## grafana web
+http://localhost:3000 (t-grafana container. admin/admin)
