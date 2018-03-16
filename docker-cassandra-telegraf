@@ -1,0 +1,25 @@
+FROM cassandra:3.11.2
+
+
+# jolokia : listen 8778 port
+COPY files/cassandra/jolokia-jvm-1.5.0-agent.jar /usr/share/cassandra/lib
+RUN echo JVM_OPTS=\"\$JVM_OPTS -javaagent:\$CASSANDRA_HOME/lib/jolokia-jvm-1.5.0-agent.jar\" >> /etc/cassandra/cassandra-env.sh
+
+# telegraf
+COPY files/telegraf/telegraf-1.5.2_linux_amd64.tar.gz /root/
+RUN tar xvfz /root/telegraf-1.5.2_linux_amd64.tar.gz -C /root
+RUN cp -rf /root/telegraf/* /
+RUN rm -rf /root/telegraf*
+
+# telegraf.conf
+COPY files/telegraf/telegraf.conf /etc/telegraf/
+
+# run shellscript
+COPY files/run-cassandra-telegraf.sh /usr/local/bin
+RUN ln -s /usr/local/bin/run-cassandra-telegraf.sh /run-cassandra-telegraf.sh
+
+ENTRYPOINT []
+CMD /run-cassandra-telegraf.sh
+
+
+

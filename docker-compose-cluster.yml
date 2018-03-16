@@ -1,0 +1,83 @@
+
+version: '3'
+
+services:
+
+  test-cassandra1:
+    container_name: t-cass1
+    build:
+      context: .
+      dockerfile: docker-cassandra-telegraf
+    image: test-cassandra-telegraf
+    command: bash -c 'if [ -z "$$(ls -A /var/lib/cassandra/)" ] ; then sleep 0; fi && /run-cassandra-telegraf.sh'
+    environment:
+      - CASSANDRA_CLUSTER_NAME=test_cluster
+      - CASSANDRA_SEEDS=test-cassandra1
+    ulimits:
+      memlock: -1
+      nproc: 32768
+      nofile: 100000
+    networks:
+      - csnet
+    ports:
+      - "9042:9042"
+
+  test-cassandra2:
+    container_name: t-cass2
+    build:
+      context: .
+      dockerfile: docker-cassandra-telegraf
+    image: test-cassandra-telegraf
+    command: bash -c 'if [ -z "$$(ls -A /var/lib/cassandra/)" ] ; then sleep 60; fi && /run-cassandra-telegraf.sh'
+    environment:
+      - CASSANDRA_CLUSTER_NAME=test_cluster
+      - CASSANDRA_SEEDS=test-cassandra1
+    ulimits:
+      memlock: -1
+      nproc: 32768
+      nofile: 100000
+    networks:
+      - csnet
+    ports:
+      - "9043:9042"
+
+  test-cassandra3:
+    container_name: t-cass3
+    build:
+      context: .
+      dockerfile: docker-cassandra-telegraf
+    image: test-cassandra-telegraf
+    command: bash -c 'if [ -z "$$(ls -A /var/lib/cassandra/)" ] ; then sleep 120; fi && /run-cassandra-telegraf.sh'
+    environment:
+      - CASSANDRA_CLUSTER_NAME=test_cluster
+      - CASSANDRA_SEEDS=test-cassandra1
+    ulimits:
+      memlock: -1
+      nproc: 32768
+      nofile: 100000
+    networks:
+      - csnet
+    ports:
+      - "9044:9042"
+
+  test-influxdb:
+    container_name: t-influxdb
+    image: influxdb:1.4.3
+    networks:
+      - csnet
+
+  test-grafana:
+    container_name: t-grafana
+    build:
+      context: .
+      dockerfile: docker-grafana
+    image: test-grafana
+    networks:
+      - csnet
+    ports:
+      - "3000:3000"
+
+
+networks:
+  csnet:
+

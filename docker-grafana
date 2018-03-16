@@ -1,0 +1,10 @@
+FROM grafana/grafana:5.0.0
+
+# jolokia : listen 8778 port
+COPY --chown=root:grafana files/grafana/provisioning/datasources/influxdb.yaml /etc/grafana/provisioning/datasources
+COPY --chown=root:grafana files/grafana/provisioning/dashboards/all.yaml /etc/grafana/provisioning/dashboards
+
+# https://grafana.com/dashboards/1138
+RUN mkdir -p /var/lib/grafana/dashboards/
+COPY --chown=grafana:grafana files/grafana/dashboards/* /var/lib/grafana/dashboards/
+
